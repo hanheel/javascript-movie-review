@@ -6,7 +6,7 @@ var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read fr
 var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "access private method"), method);
-var _footer, _button, _onClick, _bindEvent, _container, _data, _MainBanner_instances, detailButtonElement_fn, _container2, _data2, _MovieItem_instances, matchImgUrl_fn, _container3, _errorMessage, _container4, _movieItems, _MovieGrid_instances, emptyListElement_fn, movieItemElements_fn, _container5, _text, _container6, _movieListData, _currentPage, _isLoading, _MainPage_instances, titleElement_fn, mainBannerElement_fn, movieGridElement_fn, loadMoreButtonElement_fn, _loadMoreData, _container7, _movieListData2, _isLoading2, _query, _currentPage2, _totalPage, _SearchPage_instances, movieGridElement_fn2, loadMoreButtonElement_fn2, _loadMoreData2, titleElement_fn2, _container8, _container9, _searchValue, _SearchBar_instances, bindInputEvent_fn, bindEnterEvent_fn, bindSearchIconEvent_fn, search_fn, bindEvent_fn, _container10, _searchBar, _Header_instances, bindLogoClickEvent_fn, _container11, _header, _footer2, _contentContainer;
+var _footer, _button, _restProps, _container, _data, _MainBanner_instances, detailButtonElement_fn, _container2, _data2, _MovieItem_instances, matchImgUrl_fn, _container3, _errorMessage, _container4, _movieItems, _MovieGrid_instances, emptyListElement_fn, movieItemElements_fn, _container5, _text, _container6, _movieListData, _currentPage, _isLoading, _MainPage_instances, titleElement_fn, mainBannerElement_fn, movieGridElement_fn, loadMoreButtonElement_fn, _loadMoreData, _container7, _movieListData2, _isLoading2, _query, _currentPage2, _totalPage, _SearchPage_instances, movieGridElement_fn2, loadMoreButtonElement_fn2, _loadMoreData2, titleElement_fn2, _container8, _container9, _searchValue, _SearchBar_instances, bindInputEvent_fn, bindSubmitEvent_fn, search_fn, bindEvent_fn, _container10, _searchBar, _Header_instances, bindLogoClickEvent_fn, _container11, _header, _footer2, _contentContainer;
 (function polyfill() {
   const relList = document.createElement("link").relList;
   if (relList && relList.supports && relList.supports("modulepreload")) {
@@ -63,28 +63,30 @@ class Footer {
 }
 _footer = new WeakMap();
 class Button {
-  constructor({ cssType, innerText, onClick }) {
+  constructor({ size, ...rest }) {
     __privateAdd(this, _button);
-    __privateAdd(this, _onClick);
-    __privateAdd(this, _bindEvent, () => {
-      __privateGet(this, _button).addEventListener("click", () => {
-        __privateGet(this, _onClick).call(this);
-      });
-    });
+    __privateAdd(this, _restProps);
     __privateSet(this, _button, document.createElement("button"));
-    __privateGet(this, _button).classList.add(`button--${cssType}`);
-    __privateGet(this, _button).classList.add(`text-button--${cssType}`);
-    __privateGet(this, _button).innerText = innerText;
-    __privateSet(this, _onClick, onClick);
-    __privateGet(this, _bindEvent).call(this);
+    __privateGet(this, _button).classList.add(`button--${size}`);
+    __privateGet(this, _button).classList.add(`text-button--${size}`);
+    __privateSet(this, _restProps, rest);
+    this.applyPropsToButton();
+  }
+  applyPropsToButton() {
+    Object.entries(__privateGet(this, _restProps)).forEach(([key, value]) => {
+      if (key in __privateGet(this, _button)) {
+        __privateGet(this, _button)[key] = value;
+        return;
+      }
+      __privateGet(this, _button).setAttribute(key, String(value));
+    });
   }
   get element() {
     return __privateGet(this, _button);
   }
 }
 _button = new WeakMap();
-_onClick = new WeakMap();
-_bindEvent = new WeakMap();
+_restProps = new WeakMap();
 class MainBanner {
   constructor({ data }) {
     __privateAdd(this, _MainBanner_instances);
@@ -97,18 +99,22 @@ class MainBanner {
   }
   render() {
     __privateGet(this, _container).innerHTML = `
-           <div class="overlay" aria-hidden="true">
-             <img class = "main-banner__image" src=${__privateGet(this, _data).imgUrl} alt=${__privateGet(this, _data).title}/>
-           </div>
-           
-        <div class="main-banner__info">
-           <div class="main-banner__rate">
-                <img src="./star_empty.png" class="main-banner__rating-star" />
-                <span class="main-banner__rate-value text-subtitle">${__privateGet(this, _data).score}</span>
-            </div>
-              <div class="main-banner__title text-title">${__privateGet(this, _data).title}</div>
-              <div class="main-banner__button">${__privateMethod(this, _MainBanner_instances, detailButtonElement_fn).call(this)}</div>
-        </div>`;
+       <div class="overlay" aria-hidden="true">
+         <img class="main-banner__image" src=${__privateGet(this, _data).imgUrl} alt=${__privateGet(this, _data).title} />
+       </div>
+       
+       <div class="main-banner__info">
+
+         <div class="main-banner__rate">
+           <img src="./star_empty.png" class="main-banner__rating-star" />
+           <span class="main-banner__rate-value text-subtitle">${__privateGet(this, _data).score}</span>
+         </div>
+
+         <div class="main-banner__title text-title">${__privateGet(this, _data).title}</div>
+
+         <div class="main-banner__button">${__privateMethod(this, _MainBanner_instances, detailButtonElement_fn).call(this)}</div>
+       </div>
+    `;
   }
   get element() {
     return __privateGet(this, _container);
@@ -118,7 +124,7 @@ _container = new WeakMap();
 _data = new WeakMap();
 _MainBanner_instances = new WeakSet();
 detailButtonElement_fn = function() {
-  return new Button({ cssType: "small", innerText: "자세히 보기", onClick: () => {
+  return new Button({ size: "small", innerText: "자세히 보기", onclick: () => {
   } }).element.outerHTML;
 };
 class MovieItem {
@@ -132,16 +138,17 @@ class MovieItem {
   }
   render() {
     __privateGet(this, _container2).innerHTML = `
-      <div class="item">
-        <img class="thumbnail" src=${__privateMethod(this, _MovieItem_instances, matchImgUrl_fn).call(this)} alt=${__privateGet(this, _data2).title}/>
-        <div class="item-desc">
-          <p class="rate">
-            <img src="./star_empty.png" class="star" />
-            <span>${__privateGet(this, _data2).score}</span>
-          </p>
-          <strong class = 'text-body'>${__privateGet(this, _data2).title}</strong>
-        </div>
-      </div>`;
+    <div class="item">
+      <img class="thumbnail" src=${__privateMethod(this, _MovieItem_instances, matchImgUrl_fn).call(this)} alt=${__privateGet(this, _data2).title} />
+      <div class="item-desc">
+        <p class="rate">
+          <img src="./star_empty.png" class="star" />
+          <span>${__privateGet(this, _data2).score}</span>
+        </p>
+        <strong class="text-body">${__privateGet(this, _data2).title}</strong>
+      </div>
+    </div>
+  `;
   }
   get element() {
     return __privateGet(this, _container2);
@@ -165,14 +172,14 @@ class ErrorMessage {
     __privateAdd(this, _container3);
     __privateAdd(this, _errorMessage);
     __privateSet(this, _container3, document.createElement("div"));
-    __privateGet(this, _container3).classList.add("empty-result");
+    __privateGet(this, _container3).classList.add("error-message");
     __privateSet(this, _errorMessage, errorMessage);
     this.render();
   }
   render() {
     __privateGet(this, _container3).innerHTML = `
         <img src="./no-result.png" alt="으아아 행성이"/>
-        <p class="text-subtitle">${__privateGet(this, _errorMessage)}</p>
+        <p class="error-message__detail text-subtitle">${__privateGet(this, _errorMessage)}</p>
     `;
   }
   get element() {
@@ -186,16 +193,16 @@ class MovieGrid {
     __privateAdd(this, _MovieGrid_instances);
     __privateAdd(this, _container4);
     __privateAdd(this, _movieItems);
-    __privateSet(this, _container4, document.createElement("main"));
+    __privateSet(this, _container4, document.createElement("ul"));
+    __privateGet(this, _container4).classList.add("thumbnail-list");
     __privateSet(this, _movieItems, movieItems);
     this.render();
   }
   render() {
     if (__privateGet(this, _movieItems).length !== 0) {
       __privateGet(this, _container4).innerHTML = `
-      <ul class="thumbnail-list">
-      ${__privateMethod(this, _MovieGrid_instances, movieItemElements_fn).call(this)};
-      </ul>`;
+        ${__privateMethod(this, _MovieGrid_instances, movieItemElements_fn).call(this)}
+    `;
       return;
     }
     __privateGet(this, _container4).innerHTML = __privateMethod(this, _MovieGrid_instances, emptyListElement_fn).call(this);
@@ -218,6 +225,7 @@ class Title {
     __privateAdd(this, _container5);
     __privateAdd(this, _text);
     __privateSet(this, _container5, document.createElement("h2"));
+    __privateGet(this, _container5).classList.add("title");
     __privateSet(this, _text, text);
     this.render();
   }
@@ -230,38 +238,46 @@ class Title {
 }
 _container5 = new WeakMap();
 _text = new WeakMap();
-const SYSTEM_CONSTANTS = Object.freeze({
-  BASE_IMG_URL: "https://image.tmdb.org/t/p/w500",
-  SEARCH_URL: (searchValue, page) => `https://api.themoviedb.org/3/search/movie?query=${searchValue}&language=ko-KR&include_adult=false&page=${page}`,
-  MAIN_URL: (page) => `https://api.themoviedb.org/3/movie/popular?language=ko-KR&include_adult=false&page=${page}`
-});
-async function extractedeData(url) {
+const APP_CONFIG = {
+  BASE_PATH: "/javascript-movie-review"
+};
+const ASSET_PATHS = {
+  IMAGE_BASE: "https://image.tmdb.org/t/p/w500"
+};
+const MOVIE_API = {
+  getSearchUrl: (query, page) => `https://api.themoviedb.org/3/search/movie?query=${query}&language=ko-KR&include_adult=false&page=${page}`,
+  getPopularUrl: (page) => `https://api.themoviedb.org/3/movie/popular?language=ko-KR&include_adult=false&page=${page}`
+};
+async function apiClient(url, options) {
+  const requestOptions = {
+    method: options.method,
+    headers: {
+      accept: "application/json",
+      Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Mjg2NjAzNjJjNTFlZDdiYmFhYTY0ZjJiNDA1N2RjMCIsIm5iZiI6MTc0MjI3ODUwNy42NDMwMDAxLCJzdWIiOiI2N2Q5MGY2YmMwNTY2YTEwMGEwODgwYzciLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.PJb_lmB5uMCu2xFnSHsP_USp8A6S7CI5rL8l_6u1euk"}`,
+      "Content-Type": "application/json"
+    }
+  };
+  try {
+    const res = await fetch(url, requestOptions);
+    const json = await res.json();
+    return json;
+  } catch (err) {
+    redirectToPage("/error");
+    throw err;
+  }
+}
+async function extractedData(url) {
   const movieJSON = await fetchMovieList(url);
   const movieListData = movieJSON.results.map((movieItem) => ({
     title: movieItem.title,
-    imgUrl: `${SYSTEM_CONSTANTS.BASE_IMG_URL}${movieItem.poster_path}`,
+    imgUrl: `${ASSET_PATHS.IMAGE_BASE}${movieItem.poster_path}`,
     score: Number(movieItem.vote_average.toFixed(1))
   }));
   const totalPage = movieJSON.total_pages;
   return { movieListData, totalPage };
 }
 async function fetchMovieList(url) {
-  const options = {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Mjg2NjAzNjJjNTFlZDdiYmFhYTY0ZjJiNDA1N2RjMCIsIm5iZiI6MTc0MjI3ODUwNy42NDMwMDAxLCJzdWIiOiI2N2Q5MGY2YmMwNTY2YTEwMGEwODgwYzciLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.PJb_lmB5uMCu2xFnSHsP_USp8A6S7CI5rL8l_6u1euk"}`
-    }
-  };
-  try {
-    const res = await fetch(url, options);
-    const json = await res.json();
-    return json;
-  } catch (err) {
-    if (err instanceof Error) {
-      redirectToPage("/error");
-    }
-  }
+  return await apiClient(url, { method: "GET" });
 }
 const skeletonItems$1 = Array(20).fill("").map(
   () => `
@@ -317,7 +333,7 @@ class MainPage {
     __privateAdd(this, _isLoading, true);
     __privateAdd(this, _loadMoreData, async () => {
       __privateSet(this, _currentPage, __privateGet(this, _currentPage) + 1);
-      const { movieListData } = await extractedeData(SYSTEM_CONSTANTS.MAIN_URL(__privateGet(this, _currentPage)));
+      const { movieListData } = await extractedData(MOVIE_API.getPopularUrl(__privateGet(this, _currentPage)));
       __privateSet(this, _movieListData, movieListData);
       this.renderDynamicSection();
     });
@@ -328,7 +344,7 @@ class MainPage {
   async init() {
     __privateSet(this, _isLoading, true);
     this.render();
-    const { movieListData } = await extractedeData(SYSTEM_CONSTANTS.MAIN_URL(__privateGet(this, _currentPage)));
+    const { movieListData } = await extractedData(MOVIE_API.getPopularUrl(__privateGet(this, _currentPage)));
     __privateSet(this, _movieListData, movieListData);
     __privateSet(this, _isLoading, false);
     this.render();
@@ -344,7 +360,7 @@ class MainPage {
     this.renderDynamicSection();
   }
   renderDynamicSection() {
-    const loadMoreButton = document.querySelector(".button--medium");
+    const loadMoreButton = document.querySelector(".button--full");
     if (loadMoreButton) {
       loadMoreButton.remove();
     }
@@ -370,7 +386,7 @@ movieGridElement_fn = function() {
   return new MovieGrid({ movieItems: __privateGet(this, _movieListData) }).element;
 };
 loadMoreButtonElement_fn = function() {
-  return new Button({ cssType: "medium", innerText: "더보기", onClick: __privateGet(this, _loadMoreData) }).element;
+  return new Button({ size: "full", innerText: "더보기", onclick: __privateGet(this, _loadMoreData) }).element;
 };
 _loadMoreData = new WeakMap();
 const skeletonItems = Array(20).fill("").map(
@@ -417,7 +433,7 @@ class SearchPage {
     __privateAdd(this, _totalPage, 0);
     __privateAdd(this, _loadMoreData2, async () => {
       __privateSet(this, _currentPage2, __privateGet(this, _currentPage2) + 1);
-      const { movieListData } = await extractedeData(SYSTEM_CONSTANTS.MAIN_URL(__privateGet(this, _currentPage2)));
+      const { movieListData } = await extractedData(MOVIE_API.getSearchUrl(__privateGet(this, _query), __privateGet(this, _currentPage2)));
       __privateSet(this, _movieListData2, movieListData);
       this.renderDynamicSection();
     });
@@ -431,9 +447,7 @@ class SearchPage {
     __privateSet(this, _isLoading2, true);
     this.render();
     if (__privateGet(this, _query)) {
-      const { movieListData, totalPage } = await extractedeData(
-        SYSTEM_CONSTANTS.SEARCH_URL(__privateGet(this, _query), __privateGet(this, _currentPage2))
-      );
+      const { movieListData, totalPage } = await extractedData(MOVIE_API.getSearchUrl(__privateGet(this, _query), __privateGet(this, _currentPage2)));
       __privateSet(this, _movieListData2, movieListData);
       __privateSet(this, _totalPage, totalPage);
     }
@@ -450,7 +464,7 @@ class SearchPage {
     this.renderDynamicSection();
   }
   renderDynamicSection() {
-    const loadMoreButton = document.querySelector(".button--medium");
+    const loadMoreButton = document.querySelector(".button--full");
     if (loadMoreButton) {
       loadMoreButton.remove();
     }
@@ -472,7 +486,7 @@ movieGridElement_fn2 = function() {
   return new MovieGrid({ movieItems: __privateGet(this, _movieListData2) }).element;
 };
 loadMoreButtonElement_fn2 = function() {
-  return new Button({ cssType: "medium", innerText: "더보기", onClick: __privateGet(this, _loadMoreData2) }).element;
+  return new Button({ size: "full", innerText: "더보기", onclick: __privateGet(this, _loadMoreData2) }).element;
 };
 _loadMoreData2 = new WeakMap();
 titleElement_fn2 = function() {
@@ -510,7 +524,8 @@ async function renderInnerContentsByRoute() {
   return routes()[currentPath]();
 }
 async function redirectToPage(url) {
-  history.pushState({}, "", url);
+  const redirectUrl = `${APP_CONFIG.BASE_PATH}${url}`;
+  history.pushState({}, "", redirectUrl);
   await renderContent();
 }
 async function renderContent() {
@@ -532,7 +547,7 @@ class SearchBar {
     __privateAdd(this, _SearchBar_instances);
     __privateAdd(this, _container9);
     __privateAdd(this, _searchValue, "");
-    __privateSet(this, _container9, document.createElement("div"));
+    __privateSet(this, _container9, document.createElement("form"));
     __privateGet(this, _container9).classList.add("searchbar");
     this.render();
     __privateMethod(this, _SearchBar_instances, bindEvent_fn).call(this);
@@ -540,7 +555,9 @@ class SearchBar {
   render() {
     __privateGet(this, _container9).innerHTML = `
       <input placeholder="검색어를 입력하세요" class="text-placeholder searchbar__input" />
-      <img src="./search-icon.png" class="searchbar__icon"/>
+      <button class="searchbar__button" type="submit">
+        <img src="./search-icon.png" class="searchbar__icon"/>
+      </button>
   `;
   }
   get element() {
@@ -558,17 +575,9 @@ bindInputEvent_fn = function() {
     }
   });
 };
-bindEnterEvent_fn = function() {
-  const input = __privateGet(this, _container9).querySelector(".searchbar__input");
-  input == null ? void 0 : input.addEventListener("keydown", (event) => {
-    if (event instanceof KeyboardEvent && event.key === "Enter" && event.target instanceof HTMLInputElement) {
-      __privateMethod(this, _SearchBar_instances, search_fn).call(this);
-    }
-  });
-};
-bindSearchIconEvent_fn = function() {
-  const icon = __privateGet(this, _container9).querySelector(".searchbar__icon");
-  icon == null ? void 0 : icon.addEventListener("click", () => {
+bindSubmitEvent_fn = function() {
+  __privateGet(this, _container9).addEventListener("submit", (event) => {
+    event.preventDefault();
     __privateMethod(this, _SearchBar_instances, search_fn).call(this);
   });
 };
@@ -582,8 +591,7 @@ search_fn = function() {
 };
 bindEvent_fn = function() {
   __privateMethod(this, _SearchBar_instances, bindInputEvent_fn).call(this);
-  __privateMethod(this, _SearchBar_instances, bindSearchIconEvent_fn).call(this);
-  __privateMethod(this, _SearchBar_instances, bindEnterEvent_fn).call(this);
+  __privateMethod(this, _SearchBar_instances, bindSubmitEvent_fn).call(this);
 };
 class Header {
   constructor() {
@@ -601,7 +609,8 @@ class Header {
   render() {
     __privateGet(this, _container10).innerHTML = `
     <h1 class="logo"/>
-         <img src="./logo.png" alt="MovieList" ></h1>
+      <img src="./logo.png" alt="MovieList" class="logo__img"/>
+    </h1>
     `;
     __privateMethod(this, _Header_instances, bindLogoClickEvent_fn).call(this);
     const searchBarWrapper = document.createElement("div");
