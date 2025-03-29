@@ -592,7 +592,6 @@ async function apiClient(url, options) {
 }
 async function extractedData(url) {
   const movieJSON = await fetchMovieList(url);
-  console.log(movieJSON.results);
   const movieListData = movieJSON.results.map((movieItem) => ({
     id: movieItem.id,
     title: movieItem.title,
@@ -602,7 +601,6 @@ async function extractedData(url) {
     description: movieItem.overview,
     releasedDate: new Date(movieItem.release_date).getFullYear()
   }));
-  console.log(movieListData);
   const totalPage = movieJSON.total_pages;
   return { movieListData, totalPage };
 }
